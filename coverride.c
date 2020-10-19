@@ -1,6 +1,6 @@
 /*
    gcc -DDEBUG=1 -DDEBUG_2_SYSLOG=1 -DDEBUG_2_STDERR=0 -fPIC -shared \
-       -o libcoverride.so override.c -ldl -Wall -Wextra -Werror
+       -o libcoverride.so coverride.c -ldl -Wall -Wextra -Werror
    echo "/path/to/libcoverride.so" | sudo tee -a /etc/ld.so.preload
 */
 
