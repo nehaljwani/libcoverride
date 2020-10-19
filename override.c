@@ -184,3 +184,16 @@ int getaddrinfo(const char *node, const char *service,
   return ret;
 #endif
 }
+
+struct hostent *gethostbyname(const char *name) {
+  DEBUG_PRINT("%s\n", name);
+  struct hostent *(*real_gethostbyname)() = dlsym(RTLD_NEXT, __func__);
+  return real_gethostbyname(name);
+}
+
+struct hostent *gethostbyname2(const char *name, int af) {
+  DEBUG_PRINT("%s\n", name);
+  // LD_PRELOAD=$PWD/libcoverride.so getent hosts google.com
+  struct hostent *(*real_gethostbyname2)() = dlsym(RTLD_NEXT, __func__);
+  return real_gethostbyname2(name, af);
+}
