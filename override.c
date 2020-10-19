@@ -167,9 +167,10 @@ int getaddrinfo(const char *node, const char *service,
 #ifndef GETADDRINFO_EXAMPLE
   return real_getaddrinfo(node, service, hints, res);
 #else
-  // LD_PRELOAD=$PWD/libcoverride.so \
-  // python -c 'import socket; print(socket.getaddrinfo("googleapis.com", 443))'
-
+  /*
+    LD_PRELOAD=$PWD/libcoverride.so \
+    python -c 'import socket; print(socket.getaddrinfo("googleapis.com", 80))'
+  */
   int ret = real_getaddrinfo(node, service, hints, res);
   if (ret == 0) {
     DEBUG_PRINT("%s %d\n", node, (*res)->ai_family);
