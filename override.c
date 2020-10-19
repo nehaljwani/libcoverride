@@ -42,7 +42,7 @@
   } while (0)
 
 void translate_path(const char **old_str, const char **new_str,
-                    char * flexi_str __attribute__((unused)),
+                    char *flexi_str __attribute__((unused)),
                     size_t flexi_str_len __attribute__((unused))) {
   /* do something with me? */
   *new_str = (char *)*old_str;
