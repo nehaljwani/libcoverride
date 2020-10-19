@@ -5,8 +5,10 @@
 */
 
 #define _GNU_SOURCE
+#include <arpa/inet.h>
 #include <dirent.h>
 #include <dlfcn.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -156,4 +158,28 @@ ssize_t lgetxattr(const char *str, const char *name, void *value, size_t size) {
   TRANSLATE_STR(str, __str)
   ssize_t (*real_lgetxattr)() = dlsym(RTLD_NEXT, __func__);
   return real_lgetxattr(__str, name, value, size);
+}
+
+int getaddrinfo(const char *node, const char *service,
+                const struct addrinfo *hints, struct addrinfo **res) {
+  DEBUG_PRINT("%s %s\n", node, service);
+  int (*real_getaddrinfo)() = dlsym(RTLD_NEXT, __func__);
+#ifndef GETADDRINFO_EXAMPLE
+  return real_getaddrinfo(node, service, hints, res);
+#else
+  // LD_PRELOAD=$PWD/libcoverride.so \
+  // python -c 'import socket; print(socket.getaddrinfo("googleapis.com", 443))'
+
+  int ret = real_getaddrinfo(node, service, hints, res);
+  if (ret == 0) {
+    DEBUG_PRINT("%s %d\n", node, (*res)->ai_family);
+    if (strcasestr(node, "googleapis.com") && ((*res)->ai_family == AF_INET)) {
+      struct sockaddr_in *addr_in = (struct sockaddr_in *)((*res)->ai_addr);
+      DEBUG_PRINT("%s\n", inet_ntoa(addr_in->sin_addr));
+      int ret2 = inet_pton(2, "199.36.153.4", &addr_in->sin_addr);
+      DEBUG_PRINT("%s %d\n", inet_ntoa(addr_in->sin_addr), ret2);
+    }
+  }
+  return ret;
+#endif
 }
