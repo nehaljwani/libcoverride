@@ -61,6 +61,13 @@ int open(const char *str, int flags, mode_t mode) {
   return real_open(__str, flags, mode);
 }
 
+int openat(int dirfd, const char *pathname, int flags) {
+  DEBUG_PRINT("%s\n", pathname);
+  // LD_PRELOAD=/path/to/libcoverride.so gzip /path/to/crap
+  int (*real_openat)() = dlsym(RTLD_NEXT, __func__);
+  return real_openat(dirfd, pathname, flags);
+}
+
 DIR *opendir(const char *str) {
   const char *__str = str;
   TRANSLATE_STR(str, __str)
